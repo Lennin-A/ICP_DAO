@@ -7,7 +7,11 @@ import Principal "mo:base/Principal";
 
 module {
     public type Result<T, E> = Result.Result<T, E>; // used to return either #ok or #err 
-    public type Account = { owner : Principal; tokens : Tokens };
+    public type Account = {
+        owner : Principal;
+        subaccount : ?[Nat8];
+      };
+    
     public type Proposal = {
         id : Nat;       //Proposal ID
         votes_no : Tokens; // votes for NO
@@ -19,6 +23,7 @@ module {
     };
 
     public type Tokens = {amount : Nat};
+    public let zeroToken = {amount = 0};
 
     //Proposal data
     public type ProposalPayload = {

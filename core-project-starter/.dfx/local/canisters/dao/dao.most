@@ -1,0 +1,6 @@
+// Version: 1.0.0
+actor {
+  stable var next_proposal_id : Nat;
+  stable var s_account : [None];
+  stable var s_proposals : [None]
+};
