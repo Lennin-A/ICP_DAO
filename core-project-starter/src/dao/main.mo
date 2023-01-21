@@ -23,7 +23,7 @@ actor {
     };
 
     //hashmap to hold principle & text -> principal is key 
-    var accounts = HashMap.HashMap<Principal, Types.Tokens>(0, Principal.equal, Principal.hash);
+    //var accounts = HashMap.HashMap<Principal, Types.Tokens>(0, Principal.equal, Principal.hash);
     //add
     //get 
 
@@ -55,13 +55,47 @@ actor {
         return #Ok(proposal);
     };
 
-    public shared({caller}) func vote(proposal_id : Int, yes_or_no : Bool) : async {#Ok : (Nat, Nat); #Err : Text} {
-       
-        //check token status of holders
-        // if not enough then return error 
+    public shared({caller}) func vote(proposal_id : Nat, yes_or_no : Bool) : async Types.Result<Text,Text> {
+        let acc : Types.Account  = {owner = caller; subaccount = null;};
+        //await to get ride of async Nat
+        let acc_tokens = await balance(acc);
+
         // if yes, update proposal status 
-       
-        return #Err("Not implemented yet");
+        switch(proposal_get(proposal_id)) {
+            case null {return #err("Does not exist silly!")};
+            //if not null then it grabs the var, in this case the assoicated proposal 
+            case(?proposal) {
+                var state = proposal.state;
+                if (state != #open ){return #err("Not available to vote on");};
+                if(0 == acc_tokens){return #err("Grab a token dumbass");};
+                if(List.some(proposal.voters,func (e : Principal) : Bool = e == caller)){
+                  return #err("You already voted!");};
+                var votes_yes = proposal.votes_yes.amount;
+                var votes_no = proposal.votes_no.amount;
+                if(yes_or_no){
+                  votes_yes := votes_yes + 1;
+                } else{
+                  votes_no := votes_no + 1;
+                };
+              
+                let voters = List.push(caller, proposal.voters);
+
+                if(votes_yes > 100){state := #passed};
+                if(votes_no > 100){state := #rejected};
+
+                let updated_proposal : Types.Proposal = {
+                  id = proposal_id;
+                  proposer = proposal.proposer;
+                  payload = proposal.payload;
+                  state;
+                  votes_yes = {amount = votes_yes};
+                  votes_no = {amount = votes_no};
+                  voters;
+                };
+                proposal_add(proposal_id, updated_proposal);
+            };
+        };
+        return #ok("Proposal updated!");
     };
 
     public query func get_proposal(id : Nat) : async ?Types.Proposal {
@@ -73,18 +107,21 @@ actor {
     };
 
 
-    public func update_proposal(id : Nat, p : Types.Proposal) : async Types.Result<T,E> {
+    public func update_proposal(id : Nat, p : Types.Proposal) : async Types.Result<Text,Text> {
         let proposal_data : ?Types.Proposal = proposal_get(id);
 
-        
+        switch(proposal_data) {
+          case(null){
+            return #err("Proposal does not exist silly!");
+          };
+          case(?currProposal){
+
+          };
+        };
+
 
         return #err("Updated Proposal!"); 
     };
-
-
-    //update proposal status with # number of votes 
-
-    //if votes on proposal is 100> then execute the proposal 
 
     //funcs needed: update_proposal, execute proposal, 
 };
