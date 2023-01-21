@@ -24,14 +24,14 @@ actor {
 
     //hashmap to hold principle & text -> principal is key 
     var accounts = HashMap.HashMap<Principal, Types.Tokens>(0, Principal.equal, Principal.hash);
+    //add
+    //get 
 
-    //hash compares keys, nat is key 
+    //Proposal hashmap & funcs 
     var proposals = HashMap.HashMap<Nat, Types.Proposal>(0, Nat.equal, Hash.hash);
-
     func proposal_add(id : Nat, proposal : Types.Proposal) {
         proposals.put(id, proposal);
     };
-
     func proposal_get(id: Nat) : ?Types.Proposal {
         proposals.get(id);
     };
@@ -56,6 +56,11 @@ actor {
     };
 
     public shared({caller}) func vote(proposal_id : Int, yes_or_no : Bool) : async {#Ok : (Nat, Nat); #Err : Text} {
+       
+        //check token status of holders
+        // if not enough then return error 
+        // if yes, update proposal status 
+       
         return #Err("Not implemented yet");
     };
 
@@ -66,4 +71,20 @@ actor {
     public query func get_all_proposals() : async [(Nat, Types.Proposal)] {
         return Iter.toArray<(Nat, Types.Proposal)>(proposals.entries());
     };
+
+
+    public func update_proposal(id : Nat, p : Types.Proposal) : async Types.Result<T,E> {
+        let proposal_data : ?Types.Proposal = proposal_get(id);
+
+        
+
+        return #err("Updated Proposal!"); 
+    };
+
+
+    //update proposal status with # number of votes 
+
+    //if votes on proposal is 100> then execute the proposal 
+
+    //funcs needed: update_proposal, execute proposal, 
 };
