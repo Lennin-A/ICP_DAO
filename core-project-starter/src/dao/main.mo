@@ -6,26 +6,21 @@ import Hash "mo:base/Hash";
 import List "mo:base/List";
 import Iter "mo:base/Iter";
 
-
 actor {
-    
-    stable var s_account = [];
-    stable var s_proposals = [];
+    //use camel case 
+
+    stable var stable_proposals : [(Nat, Types.Proposal)] = [];
     stable var next_proposal_id : Nat = 0;
 
     // token canister for mb token
-    let token_can : actor {icrc1_balance_of : Types.Account -> async Nat} = actor ("db3eq-6iaaa-aaaah-abz6a-cai");
+    let tokenCan : actor {icrc1BalanceOf : Types.Account -> async Nat} = actor ("db3eq-6iaaa-aaaah-abz6a-cai");
+    let webpageCan : actor {update_page : Text -> async () } = actor("v7jdt-niaaa-aaaak-ad75q-cai");
 
     // grab token balance of principal 
-    public func balance(acc: Types.Account) : async Nat {
-        let token_bal = await token_can.icrc1_balance_of(acc);
+    private func balance(acc: Types.Account) : async Nat {
+        let token_bal = await tokenCan.icrc1BalanceOf(acc);
         return token_bal;
     };
-
-    //hashmap to hold principle & text -> principal is key 
-    //var accounts = HashMap.HashMap<Principal, Types.Tokens>(0, Principal.equal, Principal.hash);
-    //add
-    //get 
 
     //Proposal hashmap & funcs 
     var proposals = HashMap.HashMap<Nat, Types.Proposal>(0, Nat.equal, Hash.hash);
@@ -36,7 +31,7 @@ actor {
         proposals.get(id);
     };
 
-    public shared({caller}) func submit_proposal(this_payload : Types.ProposalPayload) : async {#Ok : Types.Proposal; #Err : Text} {
+    public shared({caller}) func submit_proposal(this_payload : Types.ProposalPayload) : async  Types.Result<Types.Proposal, Text> {
 
         let proposal_id = next_proposal_id;
         next_proposal_id += 1;
@@ -52,9 +47,10 @@ actor {
 
         };
         proposal_add(proposal_id, proposal);
-        return #Ok(proposal);
+        return #ok(proposal);
     };
 
+    //connect to http (webpage canister)
     public shared({caller}) func vote(proposal_id : Nat, yes_or_no : Bool) : async Types.Result<Text,Text> {
         let acc : Types.Account  = {owner = caller; subaccount = null;};
         //await to get ride of async Nat
@@ -80,8 +76,11 @@ actor {
               
                 let voters = List.push(caller, proposal.voters);
 
-                if(votes_yes > 100){state := #passed};
-                if(votes_no > 100){state := #rejected};
+                if(votes_yes >= 1){
+                    state := #passed;
+                    await webpageCan.update_page(proposal.payload.message);
+                };
+                if(votes_no >= 100){state := #rejected};
 
                 let updated_proposal : Types.Proposal = {
                   id = proposal_id;
@@ -118,10 +117,15 @@ actor {
 
           };
         };
-
-
         return #err("Updated Proposal!"); 
     };
 
-    //funcs needed: update_proposal, execute proposal, 
+    system func preupgrade(){
+        stable_proposals := Iter.toArray<(Nat, Types.Proposal)>(proposals.entries());
+    };
+
+    system func postupgrade() {
+        stable_proposals := [];
+    };
+
 };

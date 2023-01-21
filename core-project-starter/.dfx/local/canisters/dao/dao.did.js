@@ -1,9 +1,5 @@
 export const idlFactory = ({ IDL }) => {
   const List = IDL.Rec();
-  const Account = IDL.Record({
-    'owner' : IDL.Principal,
-    'subaccount' : IDL.Opt(IDL.Vec(IDL.Nat8)),
-  });
   const Tokens = IDL.Record({ 'amount' : IDL.Nat });
   List.fill(IDL.Opt(IDL.Tuple(IDL.Principal, List)));
   const ProposalState = IDL.Variant({
@@ -24,24 +20,18 @@ export const idlFactory = ({ IDL }) => {
     'votes_yes' : Tokens,
     'payload' : ProposalPayload,
   });
+  const Result_1 = IDL.Variant({ 'ok' : Proposal, 'err' : IDL.Text });
+  const Result = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   return IDL.Service({
-    'balance' : IDL.Func([Account], [IDL.Nat], []),
     'get_all_proposals' : IDL.Func(
         [],
-        [IDL.Vec(IDL.Tuple(IDL.Int, Proposal))],
+        [IDL.Vec(IDL.Tuple(IDL.Nat, Proposal))],
         ['query'],
       ),
     'get_proposal' : IDL.Func([IDL.Nat], [IDL.Opt(Proposal)], ['query']),
-    'submit_proposal' : IDL.Func(
-        [ProposalPayload],
-        [IDL.Variant({ 'Ok' : Proposal, 'Err' : IDL.Text })],
-        [],
-      ),
-    'vote' : IDL.Func(
-        [IDL.Int, IDL.Bool],
-        [IDL.Variant({ 'Ok' : IDL.Tuple(IDL.Nat, IDL.Nat), 'Err' : IDL.Text })],
-        [],
-      ),
+    'submit_proposal' : IDL.Func([ProposalPayload], [Result_1], []),
+    'update_proposal' : IDL.Func([IDL.Nat, Proposal], [Result], []),
+    'vote' : IDL.Func([IDL.Nat, IDL.Bool], [Result], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

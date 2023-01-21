@@ -1,5 +1,0 @@
-// Version: 1.0.0
-actor {
-  stable var s_account : [None];
-  stable var s_proposals : [None]
-};

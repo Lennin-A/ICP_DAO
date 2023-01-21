@@ -1,6 +1,19 @@
 // Version: 1.0.0
+type List<T> = ?(T, List<T>);
+type Proposal =
+  {
+    id : Nat;
+    payload : ProposalPayload;
+    proposer : Principal;
+    state : ProposalState;
+    voters : List<Principal>;
+    votes_no : Tokens;
+    votes_yes : Tokens
+  };
+type ProposalPayload = {canister_id : Principal; message : Text};
+type ProposalState = {#open; #passed; #rejected};
+type Tokens = {amount : Nat};
 actor {
   stable var next_proposal_id : Nat;
-  stable var s_account : [None];
-  stable var s_proposals : [None]
+  stable var stable_proposals : [(Nat, Proposal)]
 };

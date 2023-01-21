@@ -24,18 +24,12 @@ type HttpResponse =
    status_code: nat16;
    streaming_strategy: opt StreamingStrategy;
  };
-type HttpRequest = 
- record {
-   body: blob;
-   headers: vec HeaderField;
-   method: text;
-   url: text;
- };
 type HeaderField = 
  record {
    text;
    text;
  };
 service : {
-  http_request: (HttpRequest) -> (HttpResponse) query;
+  http_request: () -> (HttpResponse) query;
+  update_page: (text) -> ();
 }

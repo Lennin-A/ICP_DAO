@@ -47,6 +47,8 @@ module {
         proposals: [Proposal];
     };
 
+
+
     //account to array set hashmapdata to array 
     //preupgrade
     //postupgrade -> write array to the hashmap 
