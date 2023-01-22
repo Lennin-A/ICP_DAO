@@ -3,14 +3,13 @@ type List<T> = ?(T, List<T>);
 type Proposal =
   {
     id : Nat;
-    payload : ProposalPayload;
+    payload : Text;
     proposer : Principal;
     state : ProposalState;
     voters : List<Principal>;
     votes_no : Tokens;
     votes_yes : Tokens
   };
-type ProposalPayload = {canister_id : Principal; message : Text};
 type ProposalState = {#open; #passed; #rejected};
 type Tokens = {amount : Nat};
 actor {

@@ -15,15 +15,10 @@ type ProposalState =
    passed;
    rejected;
  };
-type ProposalPayload = 
- record {
-   canister_id: principal;
-   message: text;
- };
 type Proposal = 
  record {
    id: nat;
-   payload: ProposalPayload;
+   payload: text;
    proposer: principal;
    state: ProposalState;
    voters: List;
@@ -47,7 +42,6 @@ service : {
                                   Proposal;
                                 }) query;
   get_proposal: (nat) -> (opt Proposal) query;
-  submit_proposal: (ProposalPayload) -> (Result_1);
-  update_proposal: (nat, Proposal) -> (Result);
+  submit_proposal: (text) -> (Result_1);
   vote: (nat, bool) -> (Result);
 }

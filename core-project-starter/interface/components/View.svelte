@@ -2,9 +2,12 @@
   import Proposal from "./Proposal.svelte"
   import { get } from "svelte/store"
   import { daoActor, principal } from "../stores"
+  import { onMount } from "svelte"
+
+  let proposals = []
 
   async function get_all_proposals() {
-    let dao = get(daoActor);
+    let dao = get(daoActor)
     if (!dao) {
       return
     }
@@ -12,11 +15,18 @@
     console.log("Proposals", res)
     return res
   }
-  let promise =  get_all_proposals()
+  let promise = get_all_proposals()
+  onMount(async () => {
+    proposals = await get_all_proposals()
+    console.log(proposals)
+  })
 </script>
 
 {#if $principal}
-  {#await promise}
+  <!-- {#each proposals as proposal}
+    <div>ID: {proposal[0]}; Payload : {proposal[1].payload} </div>
+  {/each} -->
+  <!-- {#await promise}
     <p>Loading...</p>
   {:then proposals}
     <div id="proposals">
@@ -27,7 +37,7 @@
     </div>
   {:catch error}
     <p style="color: red">{error.message}</p>
-  {/await}
+  {/await} -->
 {:else}
   <p class="example-disabled">Connect with a wallet to access this example</p>
 {/if}

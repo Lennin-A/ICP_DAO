@@ -28,6 +28,5 @@ export interface _SERVICE {
   'get_all_proposals' : ActorMethod<[], Array<[bigint, Proposal]>>,
   'get_proposal' : ActorMethod<[bigint], [] | [Proposal]>,
   'submit_proposal' : ActorMethod<[string], Result_1>,
-  'update_proposal' : ActorMethod<[bigint, Proposal], Result>,
   'vote' : ActorMethod<[bigint, boolean], Result>,
 }

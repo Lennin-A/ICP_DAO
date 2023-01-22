@@ -31,7 +31,6 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_proposal' : IDL.Func([IDL.Nat], [IDL.Opt(Proposal)], ['query']),
     'submit_proposal' : IDL.Func([IDL.Text], [Result_1], []),
-    'update_proposal' : IDL.Func([IDL.Nat, Proposal], [Result], []),
     'vote' : IDL.Func([IDL.Nat, IDL.Bool], [Result], []),
   });
 };

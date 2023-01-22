@@ -25,12 +25,12 @@ actor {
     };
 
     //Proposal hashmap & funcs 
-    var proposals = HashMap.HashMap<Nat, Types.Proposal>(0, Nat.equal, Hash.hash);
+    //var proposals = HashMap.HashMap<Nat, Types.Proposal>(0, Nat.equal, Hash.hash);
+
+    let proposals = HashMap.fromIter<Nat, Types.Proposal>(stable_proposals.vals(), 20, Nat.equal, Hash.hash );
+
     func proposal_add(id : Nat, proposal : Types.Proposal) {
         proposals.put(id, proposal);
-    };
-    func proposal_get(id: Nat) : ?Types.Proposal {
-        proposals.get(id);
     };
 
     public shared({caller}) func submit_proposal(payload : Text) : async  Types.Result<Types.Proposal, Text> {
@@ -59,7 +59,7 @@ actor {
         let acc_tokens = await balance(acc);
 
         // if yes, update proposal status 
-        switch(proposal_get(proposal_id)) {
+        switch(await get_proposal(proposal_id)) {
             case null {return #err("Does not exist silly!")};
             //if not null then it grabs the var, in this case the assoicated proposal 
             case(?proposal) {
@@ -100,27 +100,12 @@ actor {
     };
 
     public query func get_proposal(id : Nat) : async ?Types.Proposal {
-        return proposal_get(id);
+        return proposals.get(id);
     };
     
     public query func get_all_proposals() : async [(Nat, Types.Proposal)] {
         return Iter.toArray<(Nat, Types.Proposal)>(proposals.entries());
     };
-
-
-    // public func update_proposal(id : Nat, p : Types.Proposal) : async Types.Result<Text,Text> {
-    //     let proposal_data : ?Types.Proposal = proposal_get(id);
-
-    //     switch(proposal_data) {
-    //       case(null){
-    //         return #err("Proposal does not exist silly!");
-    //       };
-    //       case(?currProposal){
-
-    //       };
-    //     };
-    //     return #err("Updated Proposal!"); 
-    // };
 
     system func preupgrade(){
         stable_proposals := Iter.toArray<(Nat, Types.Proposal)>(proposals.entries());
