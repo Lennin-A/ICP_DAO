@@ -108,19 +108,19 @@ actor {
     };
 
 
-    public func update_proposal(id : Nat, p : Types.Proposal) : async Types.Result<Text,Text> {
-        let proposal_data : ?Types.Proposal = proposal_get(id);
+    // public func update_proposal(id : Nat, p : Types.Proposal) : async Types.Result<Text,Text> {
+    //     let proposal_data : ?Types.Proposal = proposal_get(id);
 
-        switch(proposal_data) {
-          case(null){
-            return #err("Proposal does not exist silly!");
-          };
-          case(?currProposal){
+    //     switch(proposal_data) {
+    //       case(null){
+    //         return #err("Proposal does not exist silly!");
+    //       };
+    //       case(?currProposal){
 
-          };
-        };
-        return #err("Updated Proposal!"); 
-    };
+    //       };
+    //     };
+    //     return #err("Updated Proposal!"); 
+    // };
 
     system func preupgrade(){
         stable_proposals := Iter.toArray<(Nat, Types.Proposal)>(proposals.entries());
