@@ -1,39 +1,48 @@
-type Subaccount = vec nat8;
+type Tokens = record {amount: nat;};
+type Result_1 = 
+ variant {
+   err: text;
+   ok: Proposal;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type ProposalState = 
+ variant {
+   open;
+   passed;
+   rejected;
+ };
 type Proposal = 
  record {
-   creator: Account;
+   id: nat;
    payload: text;
-   status: variant {
-             Open;
-             Passed;
-             Rejected;
-           };
-   timestamp: int;
-   votes: record {
-            nat;
-            nat;
-          };
+   proposer: principal;
+   state: ProposalState;
+   voters: List;
+   votes_no: Tokens;
+   votes_yes: Tokens;
  };
+type List = 
+ opt record {
+       principal;
+       List;
+     };
 type Account = 
  record {
    owner: principal;
-   subaccount: opt Subaccount;
+   subaccount: opt vec nat8;
  };
 service : {
+  balance: (Account) -> (nat);
   get_all_proposals: () -> (vec record {
-                                  int;
+                                  nat;
                                   Proposal;
                                 }) query;
-  get_proposal: (int) -> (opt Proposal) query;
-  submit_proposal: (text) -> (variant {
-                                Err: text;
-                                Ok: Proposal;
-                              });
-  vote: (int, bool) -> (variant {
-                          Err: text;
-                          Ok: record {
-                                nat;
-                                nat;
-                              };
-                        });
+  get_proposal: (nat) -> (opt Proposal) query;
+  submit_proposal: (text) -> (Result_1);
+  update_proposal: (nat, Proposal) -> (Result);
+  vote: (nat, bool) -> (Result);
 }

@@ -19,17 +19,12 @@ module {
         state : ProposalState; //Proposal status 
         proposer : Principal;  //caller
         votes_yes : Tokens;    // votes no
-        payload : ProposalPayload;  //text
+        payload : Text;  //text
     };
 
     public type Tokens = {amount : Nat};
     public let zeroToken = {amount = 0};
 
-    //Proposal data
-    public type ProposalPayload = {
-        message : Text;
-        canister_id : Principal;
-    };
 
     // Proposal Status 
     public type ProposalState = {

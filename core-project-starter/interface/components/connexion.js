@@ -4,7 +4,7 @@ import { idlFactory as idlFactoryDAO } from "../../src/declarations/dao/dao.did.
 
 //TODO : Add your mainnet id whenever you have deployed on the IC
 const daoCanisterId =
-  process.env.NODE_ENV === "development" ? "ryjl3-tyaaa-aaaaa-aaaba-cai" : "rvpd5-iqaaa-aaaaj-qazsa-cai"
+  process.env.NODE_ENV === "development" ? "ryjl3-tyaaa-aaaaa-aaaba-cai" : "vdnzc-2iaaa-aaaak-ad77q-cai"
 
 // See https://docs.plugwallet.ooo/ for more informations
 export async function plugConnection() {

@@ -7,18 +7,20 @@ import List "mo:base/List";
 import Iter "mo:base/Iter";
 
 actor {
-    //use camel case 
+    //proposals not storing properly 
 
     stable var stable_proposals : [(Nat, Types.Proposal)] = [];
+
+    //reset this var
     stable var next_proposal_id : Nat = 0;
 
     // token canister for mb token
-    let tokenCan : actor {icrc1BalanceOf : Types.Account -> async Nat} = actor ("db3eq-6iaaa-aaaah-abz6a-cai");
+    let tokenCan : actor {icrc1_balance_of : Types.Account -> async Nat} = actor ("db3eq-6iaaa-aaaah-abz6a-cai");
     let webpageCan : actor {update_page : Text -> async () } = actor("v7jdt-niaaa-aaaak-ad75q-cai");
 
     // grab token balance of principal 
-    private func balance(acc: Types.Account) : async Nat {
-        let token_bal = await tokenCan.icrc1BalanceOf(acc);
+    public func balance(acc: Types.Account) : async Nat {
+        let token_bal = await tokenCan.icrc1_balance_of(acc);
         return token_bal;
     };
 
@@ -31,7 +33,7 @@ actor {
         proposals.get(id);
     };
 
-    public shared({caller}) func submit_proposal(this_payload : Types.ProposalPayload) : async  Types.Result<Types.Proposal, Text> {
+    public shared({caller}) func submit_proposal(payload : Text) : async  Types.Result<Types.Proposal, Text> {
 
         let proposal_id = next_proposal_id;
         next_proposal_id += 1;
@@ -39,7 +41,7 @@ actor {
         let proposal : Types.Proposal = {
             id = proposal_id;
             proposer = caller;
-            payload = this_payload;
+            payload;
             state = #open;
             votes_yes = Types.zeroToken;
             votes_no = Types.zeroToken;
@@ -78,7 +80,7 @@ actor {
 
                 if(votes_yes >= 1){
                     state := #passed;
-                    await webpageCan.update_page(proposal.payload.message);
+                    await webpageCan.update_page(proposal.payload);
                 };
                 if(votes_no >= 100){state := #rejected};
 

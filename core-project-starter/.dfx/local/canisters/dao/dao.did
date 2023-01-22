@@ -15,15 +15,10 @@ type ProposalState =
    passed;
    rejected;
  };
-type ProposalPayload = 
- record {
-   canister_id: principal;
-   message: text;
- };
 type Proposal = 
  record {
    id: nat;
-   payload: ProposalPayload;
+   payload: text;
    proposer: principal;
    state: ProposalState;
    voters: List;
@@ -35,13 +30,19 @@ type List =
        principal;
        List;
      };
+type Account = 
+ record {
+   owner: principal;
+   subaccount: opt vec nat8;
+ };
 service : {
+  balance: (Account) -> (nat);
   get_all_proposals: () -> (vec record {
                                   nat;
                                   Proposal;
                                 }) query;
   get_proposal: (nat) -> (opt Proposal) query;
-  submit_proposal: (ProposalPayload) -> (Result_1);
+  submit_proposal: (text) -> (Result_1);
   update_proposal: (nat, Proposal) -> (Result);
   vote: (nat, bool) -> (Result);
 }

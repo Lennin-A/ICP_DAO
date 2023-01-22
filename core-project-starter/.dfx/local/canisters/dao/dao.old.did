@@ -1,0 +1,47 @@
+type Tokens = record {amount: nat;};
+type Result_1 = 
+ variant {
+   err: text;
+   ok: Proposal;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type ProposalState = 
+ variant {
+   open;
+   passed;
+   rejected;
+ };
+type ProposalPayload = 
+ record {
+   canister_id: principal;
+   message: text;
+ };
+type Proposal = 
+ record {
+   id: nat;
+   payload: ProposalPayload;
+   proposer: principal;
+   state: ProposalState;
+   voters: List;
+   votes_no: Tokens;
+   votes_yes: Tokens;
+ };
+type List = 
+ opt record {
+       principal;
+       List;
+     };
+service : {
+  get_all_proposals: () -> (vec record {
+                                  nat;
+                                  Proposal;
+                                }) query;
+  get_proposal: (nat) -> (opt Proposal) query;
+  submit_proposal: (ProposalPayload) -> (Result_1);
+  update_proposal: (nat, Proposal) -> (Result);
+  vote: (nat, bool) -> (Result);
+}
