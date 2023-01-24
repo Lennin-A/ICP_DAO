@@ -23,9 +23,9 @@
 </script>
 
 {#if $principal}
-  <!-- {#each proposals as proposal}
+  {#each proposals as proposal}
     <div>ID: {proposal[0]}; Payload : {proposal[1].payload} </div>
-  {/each} -->
+  {/each} 
   <!-- {#await promise}
     <p>Loading...</p>
   {:then proposals}

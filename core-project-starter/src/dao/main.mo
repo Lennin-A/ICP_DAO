@@ -78,7 +78,7 @@ actor {
               
                 let voters = List.push(caller, proposal.voters);
 
-                if(votes_yes >= 1){
+                if(votes_yes >= 100){
                     state := #passed;
                     await webpageCan.update_page(proposal.payload);
                 };
